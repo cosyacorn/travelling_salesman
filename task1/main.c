@@ -3,6 +3,8 @@
 #include<time.h>
 #include<unistd.h>
 
+double dist(double *point_a, double point_b);
+
 int main(int argc, char **argv){
 
   int nflag, opt, num_cities;
