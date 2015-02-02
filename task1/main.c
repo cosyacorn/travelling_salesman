@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<time.h>
 #include<unistd.h>
+#include<math.h>
 
 double dist(double **coords, int point_a, int point_b);
 
@@ -40,7 +41,11 @@ int main(int argc, char **argv){
     //printf("\n");
   }
 
-  printf("%f\n", dist(points, 1, 4));
 
+  for(i=0;i<num_cities;i++){
+    for(j=i+1;j<num_cities;j++){
+      printf("%f %d %d\n", dist(points, i, j),i,j);
+    }
+  }
   return 0;
 }
