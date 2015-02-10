@@ -1,8 +1,7 @@
-void swap(int *x, int *y){
-
-  int temp;
-  temp = *x;
-  *x = *y;
-  *y = temp;
-
+void swap (int v[], int i, int j) {
+  int	t;
+  
+  t = v[i];
+  v[i] = v[j];
+  v[j] = t;
 }
