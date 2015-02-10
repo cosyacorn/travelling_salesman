@@ -5,26 +5,23 @@
 #include<math.h>
 
 double dist(double **coords, int point_a, int point_b);
-void permute(int *order, int n, int i, int **route);
-
-int factorial(int n){
-  if (n<=1)
-    return(1);
-  else
-    n=n*factorial(n-1);
-  return(n);
-}
+void permute(int *order, int n, int i, FILE *fp);
+void free_2d(double **mat, int size);
+double route_dist(double **dists, int num_cities, int *route);
+int *shortest_route(FILE *fp, double **dists, int num_cities);
 
 
 int main(int argc, char **argv){
 
-  int nflag, *order, opt, num_cities, i, j, k, num_perms, **route;
+  int nflag, *order, opt, num_cities, i, j;
   double **points, **dists;
+  FILE *fp;
 
+  fp=fopen("routes.txt", "w+");
   srand48(time(NULL));
-
   nflag=0;
 
+  //COMMAND LINE 
   while((opt=getopt(argc,argv,"n:"))!=-1){
     switch(opt){
 
@@ -46,56 +43,43 @@ int main(int argc, char **argv){
     points[i]=(double*)malloc(sizeof(double)*2);
     for(j=0;j<2;j++){
       points[i][j]=drand48();
-      //printf("%f ", points[i][j]);
-    }
-    //printf("\n");
-  }
-
-
-  num_perms=factorial(num_cities-1);
-  
-  
-  route=(int**)malloc(sizeof(int*)*num_perms);
-  for(k=0;k<num_perms;k++){
-    route[k]=(int*)malloc(sizeof(int)*num_cities);
-    for(j=0;j<num_cities;j++){
-      route[k][j]=j;
     }
   }
 
-
-
-
-
+  //SET UP DIST MATRIX
   dists=(double**)malloc(sizeof(double*)*num_cities);
   for(i=0;i<num_cities;i++){
     dists[i]=(double*)malloc(sizeof(double)*(num_cities-(i+1)));
     for(j=i+1;j<num_cities;j++){
       dists[i][j]=dist(points, i, j);
-      //printf("%f %d %d\n", dists[i][j], i, j);
     }
   }
-
   
+  //SET INITIAL ORDERING OF ROUTE
   order=(int*)malloc(sizeof(int)*num_cities);
   for(i=0;i<num_cities;i++){
     order[i]=i;
-    //printf("%d ", order[i]);
   }
-  //printf("\n");
 
-  //permute(order, num_cities, 0);
+  //GET ALL PERMUTATIONS AND WRITE TO A FILE
+  permute(order, num_cities, 1, fp);
 
+  fclose(fp);
+  //have written file and now need to read it
+  fp=fopen("routes.txt", "r");
 
-  //for(i=0;i<num_cities;i++){
-  permute(order, num_cities, 1, route);
+  order=shortest_route(fp, dists, num_cities);
 
-  for(i=0;i<num_perms;i++){
-    for(j=0; j<num_cities;j++){
-      printf("%d ", route[i][j]);
-    }
-    printf("\n");
-  }
+  for(i=0;i<num_cities;i++)
+    printf("%d ", order[i]);
+
+  printf("\n");
+
+  fclose(fp);
+
+  free_2d(points, num_cities);
+  free_2d(dists, num_cities);
+  //free(order);
 
   return 0;
 }
